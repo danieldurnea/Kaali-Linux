@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kali-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kali
+  template:
+    metadata:
+      labels:
+        app: kali
+    spec:
+      containers:
+      - name: kali-container
+        image: lostcauze7/kali-dockerized:latest
+        ports:
+        - containerPort: 8087
+        securityContext:
+          privileged: true
+        workingDir: /usr
+        command:
+        - "/bin/bash"
+        - "/docker-entrypoint.sh"
+        - "tail"
+        - "-f"
+        - "/dev/null"
+        stdin: true
+        tty: true
