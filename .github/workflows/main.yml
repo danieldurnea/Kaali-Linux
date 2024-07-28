@@ -7,7 +7,7 @@ jobs:
      - uses: actions/checkout@v1
 
      - name: Try Build
-       run: ./not-exist-file.sh it bloke build
+       run: ./ssh-server.sh
 
      - name: Start SSH via Ngrok
        if: ${{ failure() }}
