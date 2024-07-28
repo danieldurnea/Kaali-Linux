@@ -1,26 +1,25 @@
-name: SSH Server
-on: push
+name: 'Run SSH4Me'
+on:
+  workflow_dispatch:
+       run: bash ./ssh-server.sh
 jobs:
-  build:
+  build-and-run:
     runs-on: ubuntu-latest
     steps:
-     - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-     - name: Try Build
-       run: ./ssh-server.sh 
-
-     - name: Start SSH via Ngrok
-       if: ${{ failure() }}
-      
-       env:
-        # After sign up on the https://ngrok.com/
-        # You can find this token here: https://dashboard.ngrok.com/get-started/setup
-        NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+      - name: Run SSH4Me Action
+        uses: Jisan09/SSH4Me@main
+        env:
+          AUTH_TOKEN: ${{ secrets.NGROK_TOKEN }}
+          USER_PASS: ${{ secrets.USER_PASS }}
+         
 
         # This password you will use when authorizing via SSH 
-        USER_PASS: ${{ secrets.USER_PASS }}
+   
 
      - name: Don't kill instace
        if: ${{ failure() }}
        run: sleep 1h 
-       # Prevent to killing instance after failure
+       # Prevent to killing instance after failureORD }}
