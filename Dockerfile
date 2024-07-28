@@ -112,6 +112,7 @@ RUN sudo apt-get install -y nodejs
 ENV LANG en_US.utf8
 ARG NGROK_TOKEN
 ENV NGROK_TOKEN=${NGROK_TOKEN}
+ARG USER_PASS
 RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
 RUN unzip ngrok.zip
 RUN echo "./ngrok config add-authtoken ${NGROK_TOKEN} &&" >>/start
