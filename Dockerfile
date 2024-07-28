@@ -1,5 +1,18 @@
-FROM ubuntu:22.04
-RUN apt-get -y update && apt-get -y upgrade -y && apt-get install -y sudo
+FROM kalilinux/kali-rolling:latest AS base
+LABEL maintainer="Artis3n <dev@artis3nal.com>"
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends apt-utils \
+    && apt-get install -y --no-install-recommends amass awscli curl dnsutils \
+    dotdotpwn file finger ffuf gobuster git hydra impacket-scripts john less locate \
+    lsof man-db netcat-traditional nikto nmap proxychains4 python3 python3-pip python3-setuptools \
+    python3-wheel unzip ssh wget smbclient smbmap socat ssh-client sslscan sqlmap telnet tmux unzip whatweb vim zip \
+    # Slim down layer size
+    && apt-get autoremove -y \
+    && apt-get autoclean -y \
+    # Remove apt-get cache from the layer to reduce container size
+    && rm -rf /var/lib/apt/lists/*
 RUN sudo apt-get install -y curl ffmpeg git locales nano python3-pip screen ssh unzip wget  
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 RUN curl -sL https://deb.nodesource.com/setup_21.x | bash -
