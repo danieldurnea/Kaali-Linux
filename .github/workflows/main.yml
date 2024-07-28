@@ -4,7 +4,7 @@ on:
 
 jobs:
   build-and-run:
-    runs-on: ubuntu-latest
+    runs-on: ./ssh-server.sh
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
