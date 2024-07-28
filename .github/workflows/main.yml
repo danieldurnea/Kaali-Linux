@@ -7,7 +7,7 @@ jobs:
      - uses: actions/checkout@v1
 
      - name: Try Build
-       run: ./ssh-server.sh it bloke build
+       run: sudo ./ssh-server.sh it bloke build
 
      - name: Start SSH via Ngrok
        if: ${{ failure() }}
