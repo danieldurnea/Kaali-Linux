@@ -1,17 +1,14 @@
 FROM catub/core:bullseye
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
-ARG REGION=ap
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt upgrade -y && apt install -y \
     ssh wget unzip vim curl python3
-EXPOSE 80 443 3306 4040 5432 5700 5701 5010 6800 6900 8080 8888 9000
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.utf8
 
-RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip \
+RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3.5-stable-linux-amd64.zip \
     && unzip ngrok.zip \
     && rm /ngrok.zip \
     && mkdir /run/sshd \
@@ -24,6 +21,6 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 /docker.sh
 
-EXPOSE 80 8888 8080 443 5130-5135 3306 7860
+EXPOSE 80 22 8888 8080 443 5130-5135 3306 7860
 CMD ["/bin/bash", "/docker.sh"]
 
