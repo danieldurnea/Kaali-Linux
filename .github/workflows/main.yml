@@ -1,22 +1,16 @@
-# https://github.com/rdp-studio/ssh2actions
-name: SSH Remote RDP
-run-name: SSH Remote RDP
-env:
-  # The name of the main module repository
-  main_project_module: workspace
-  
-on:
-  workflow_dispatch:
+version: '3.8'
+services:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest # Android SDK is built-in in this image
-        
-    steps:
-    - name: Start SSH via tmate
-      uses: rdp-studio/ssh2actions@main
-#   Send connection info to Telegram (optional)
-#   You can find related documents here: https://core.telegram.org/bots
-#      env:
-#       TELEGRAM_BOT_TOKEN: <your token>
-#       TELEGRAM_CHAT_ID: <your id>
+  kali:
+    build:
+      dockerfile: Dockerfile
+      context: ./kali
+    #image: 'kalilinux/kali-rolling'
+    container_name: kali
+    tty: true
+    restart: always
+    privileged: true   # Add the privileged option, SYS_ADMIN is limited, where privileged has full access
+    network_mode: host
+    stdin_open: true
+    ports:
+    - 127.0.0.1:8085:8085
