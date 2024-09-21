@@ -1,93 +1,35 @@
-FROM kalilinux/kali-rolling
+FROM kalilinux/kali-rolling:latest
 
-#https://github.com/moby/moby/issues/27988
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+LABEL org.opencontainers.image.author="benjitrapp.github.io"
 
-# Update + common tools + Install Metapackages https://www.kali.org/docs/general-use/metapackages/
+ENV DEBIAN_FRONTEND noninteractive
+ARG NGROK_TOKEN
+ARG PASSWORD=rootuser
+ENV GOROOT=/usr/lib/go
+ENV GO111MODULE=on
+ENV GOPATH=$HOME/go
+ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt upgrade -y && apt install -y \
+    ssh wget unzip git vim curl python3
 
-RUN apt-get update; apt-get install -y -q kali-linux-headless
+COPY containerfiles/entrypoint.sh /entrypoint.sh
+COPY containerfiles/bashrc.sh /bashrc.sh
+RUN chmod +x /entrypoint.sh
 
-# Default packages
-
-RUN apt-get install -y wget curl net-tools whois netcat-traditional pciutils bmon htop tor
-
-# Kali - Common packages
-
-RUN apt -y install amap \
-    apktool \
-    arjun \
-    beef-xss \
-    binwalk \
-    cri-tools \
-    dex2jar \
-    dirb \
-    exploitdb \
-    kali-tools-top10 \
-    kubernetes-helm \
-    lsof \
-    ltrace \
-    man-db \
-    nikto \
-    set \
-    steghide \
-    strace \
-    theharvester \
-    trufflehog \
-    uniscan \
-    wapiti \
-    whatmask \
-    wpscan \
-    xsser \
-    yara
-
-#Sets WORKDIR to /usr
-
-WORKDIR /usr
-
-# XSS-RECON
-
-RUN git clone https://github.com/Ak-wa/XSSRecon; 
-
-# Install language dependencies
-
-RUN apt -y install python3-pip npm nodejs golang
-
-# PyEnv
-RUN apt install -y build-essential \
-    libssl-dev \
-    zlib1g-dev \
-    libbz2-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    llvm \
-    libncurses5-dev \
-    libncursesw5-dev \
-    xz-utils \
-    tk-dev \
-    libffi-dev \
-    liblzma-dev \
-    python3-openssl
-
-RUN curl https://pyenv.run | bash
-
-# Set-up necessary Env vars for PyEnv
-ENV PYENV_ROOT /root/.pyenv
-ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
-
-RUN pyenv install -v 3.7.16; pyenv install -v 3.8.15
-
-# GitHub Additional Tools
-
-# Blackbird
-# for usage: blackbird/
-# python blackbird.py
-RUN git clone https://github.com/p1ngul1n0/blackbird && cd blackbird && pyenv local 3.8.15 && pip install -r requirements.txt && cd ../
-
-# Maigret
-RUN git clone https://github.com/soxoj/maigret.git && pyenv local 3.8.15 && pip3 install maigret && cd ../
-
-# Sherlock
-# https://github.com/sherlock-project/sherlock
-RUN pip install sherlock-project
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/duo-labs/cloudmapper.git /opt/cloudmapper
+RUN apt update && apt upgrade -y && apt install -y \
+    ssh wget unzip vim curl python3
+RUN wget -q https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O /ngrok-stable-linux-amd64.zip\
+    && cd / && unzip ngrok-stable-linux-amd64.zip \
+    && chmod +x ngrok
+RUN mkdir /run/sshd \
+    && echo "/ngrok tcp --authtoken ${NGROK_TOKEN} --region ${REGION} 22 &" >>/openssh.sh \
+    && echo "sleep 5" >> /openssh.sh \
+    && echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; print(\\\"ssh info:\\\n\\\",\\\"ssh\\\",\\\"root@\\\"+json.load(sys.stdin)['tunnels'][0]['public_url'][6:].replace(':', ' -p '),\\\"\\\nROOT Password:craxid\\\")\" || echo \"\nError：NGROK_TOKEN，Ngrok Token\n\"" >> /openssh.sh \
+    && echo '/usr/sbin/sshd -D' >>/openssh.sh \
+    && echo 'PermitRootLogin yes' >>  /etc/ssh/sshd_config  \
+    && echo root:craxid|chpasswd \
+    && chmod 755 /openssh.sh
+EXPOSE 80 443 3306 4040 5432 5700 5701 5010 6800 6900 8080 8888 9000
+ENTRYPOINT [ "/entrypoint.sh" ]
