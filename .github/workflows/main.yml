@@ -15,19 +15,4 @@ jobs:
     - name: Start SSH via tmate
       uses: rdp-studio/ssh2actions@main
 
-version: '3.8'
-services:
 
-  kali:
-    build:
-      dockerfile: Dockerfile
-      context: ./kali
-    #image: 'kalilinux/kali-rolling'
-    container_name: kali
-    tty: true
-    restart: always
-    privileged: true   # Add the privileged option, SYS_ADMIN is limited, where privileged has full access
-    network_mode: host
-    stdin_open: true
-    ports:
-    - 127.0.0.1:8085:8085
