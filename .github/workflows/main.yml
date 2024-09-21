@@ -1,3 +1,20 @@
+name: SSH Remote RDP
+run-name: SSH Remote RDP
+env:
+  # The name of the main module repository
+  main_project_module: workspace
+  
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Android SDK is built-in in this image
+        
+    steps:
+    - name: Start SSH via tmate
+      uses: rdp-studio/ssh2actions@main
+
 version: '3.8'
 services:
 
