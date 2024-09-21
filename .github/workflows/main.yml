@@ -1,18 +1,16 @@
-name: SSH Remote RDP
-run-name: SSH Remote RDP
-env:
-  # The name of the main module repository
-  main_project_module: workspace
-  
+name: 'Run SSH4Me'
 on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # Android SDK is built-in in this image
-        
+  build-and-run:
+    runs-on: ubuntu-latest
     steps:
-    - name: Start SSH via tmate
-      uses: rdp-studio/ssh2actions@main
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-
+      - name: Run SSH4Me Action
+        uses: Jisan09/SSH4Me@main
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          PASSWORD: ${{ secrets.PASSWORD }}
