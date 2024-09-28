@@ -12,18 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
     openssh-server \
     python2 \
     unzip \
-    wget \
-    dialog \
-    firefox-esr \
-    inetutils-ping \
-    htop \
-    nano \
-    net-tools \
-    tigervnc-standalone-server \
-    tigervnc-xorg-extension \
-    tigervnc-viewer \
-    novnc \
-    dbus-x11
+    wget 
 ARG NGROK_TOKEN
 ARG Password
 ENV Password=${Password}
