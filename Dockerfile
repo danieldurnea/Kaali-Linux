@@ -36,4 +36,4 @@ RUN chmod 755 kali.sh
 
 
 EXPOSE 22/tcp
-CMD ["sleep", "infinity"
+
