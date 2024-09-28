@@ -94,7 +94,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY docker-entrypoint.sh /
 
-COPY conf/proxychains.conf /etc/proxychains.conf
 
 
 RUN apt-get -y update && apt-get -y upgrade -y && apt-get install -y sudo
