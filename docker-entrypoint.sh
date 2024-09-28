@@ -1,62 +1,63 @@
+#linux-run.sh LINUX_USER_PASSWORD NGROK_AUTH_TOKEN LINUX_USERNAME LINUX_MACHINE_NAME
 #!/bin/bash
-set -e
-container=docker
-export container
+# /home/runner/.ngrok2/ngrok.yml
 
-if [ $# -eq 0 ]; then
-	echo >&2 'ERROR: No command specified. You probably want to run `journalctl -f`, or maybe `bash`?'
-	exit 1
+sudo useradd -m $LINUX_USERNAME
+sudo adduser $LINUX_USERNAME sudo
+echo "$LINUX_USERNAME:$LINUX_USER_PASSWORD" | sudo chpasswd
+sed -i 's/\/bin\/sh/\/bin\/bash/g' /etc/passwd
+sudo hostname $LINUX_MACHINE_NAME
+
+if [[ -z "$NGROK_AUTH_TOKEN" ]]; then
+  echo "No se ha detectado ningún 'NGROK_AUTH_TOKEN' por favor colocalo para poder seguir."
+  exit 2
 fi
 
-if [ ! -t 0 ]; then
-	echo >&2 'ERROR: TTY needs to be enabled (`docker run -t ...`).'
-	exit 1
+if [[ -z "$LINUX_USER_PASSWORD" ]]; then
+  echo "No se ha detectado ningun 'LINUX_USER_PASSWORD' por favor colocalo para poder seguir: $USER"
+  exit 3
 fi
 
-env >/etc/docker-entrypoint-env
+if [[ -z "$GIT_EMAIL" ]]; then
+echo "El correo de github es obligatorio, y no se ha encontrado por ninguna parte."
+exit 4
+fi
 
-cat >/etc/systemd/system/docker-entrypoint.target <<EOF
-[Unit]
-Description=the target for docker-entrypoint.service
-Requires=docker-entrypoint.service systemd-logind.service systemd-user-sessions.service
-EOF
+if [[ -z "$GIT_NAME" ]]; then
+echo "El nombre es obligatorio, y no se ha encotrado por ninguna parte"
+exit 5
+fi
 
-quoted_args="$(printf " %q" "${@}")"
-echo "${quoted_args}" >/etc/docker-entrypoint-cmd
 
-cat >/etc/systemd/system/docker-entrypoint.service <<EOF
-[Unit]
-Description=docker-entrypoint.service
+echo "### Instalando ngrok para el tunel ###"
 
-[Service]
-ExecStart=/bin/bash -exc "source /etc/docker-entrypoint-cmd"
-# EXIT_STATUS is either an exit code integer or a signal name string, see systemd.exec(5)
-ExecStopPost=/bin/bash -ec "if echo \${EXIT_STATUS} | grep [A-Z] > /dev/null; then echo >&2 \"got signal \${EXIT_STATUS}\"; systemctl exit \$(( 128 + \$( kill -l \${EXIT_STATUS} ) )); else systemctl exit \${EXIT_STATUS}; fi"
-StandardInput=tty-force
-StandardOutput=inherit
-StandardError=inherit
-WorkingDirectory=$(pwd)
-EnvironmentFile=/etc/docker-entrypoint-env
+wget -q https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip
+unzip ngrok-stable-linux-386.zip
+chmod +x ./ngrok
 
-[Install]
-WantedBy=multi-user.target
-EOF
+echo "### Actualizando contraseña de: $USER ###"
+echo -e "$LINUX_USER_PASSWORD\n$LINUX_USER_PASSWORD" | sudo passwd "$USER"
+echo sshpass -p $LINUX_USER_PASSWORD ssh $LINUX_USERNAME@$LINUX_MACHINE_NAME
 
-systemctl mask systemd-firstboot.service systemd-udevd.service systemd-modules-load.service
-systemctl unmask systemd-logind
-systemctl enable docker-entrypoint.service
+echo "### Iniciando el servidor vps. ###"
 
-systemd=
-if [ -x /lib/systemd/systemd ]; then
-	systemd=/lib/systemd/systemd
-elif [ -x /usr/lib/systemd/systemd ]; then
-	systemd=/usr/lib/systemd/systemd
-elif [ -x /sbin/init ]; then
-	systemd=/sbin/init
+
+rm -f .ngrok.log
+./ngrok authtoken "$NGROK_AUTH_TOKEN"
+./ngrok tcp 22 --log ".ngrok.log" &
+
+sleep 10
+HAS_ERRORS=$(grep "Lo sentimos, pero ha ocurrido un error insperado." < .ngrok.log)
+
+if [[ -z "$HAS_ERRORS" ]]; then
+  echo ""
+  echo "=========================================="
+  echo "Para conectarte utiliza: $(grep -o -E "tcp://(.+)" < .ngrok.log | sed "s/tcp:\/\//ssh $USER@/" | sed "s/:/ -p /")"
+  echo "o para conectar con $(grep -o -E "tcp://(.+)" < .ngrok.log | sed "s/tcp:\/\//ssh $USER@/" | sed "s/:/ -p /")"
+  echo "=========================================="
+  
+  
 else
-	echo >&2 'ERROR: systemd is not installed'
-	exit 1
+  echo "$HAS_ERRORS"
+  exit 4
 fi
-systemd_args="--show-status=false --unit=docker-entrypoint.target"
-echo "$0: starting $systemd $systemd_args"
-exec $systemd $systemd_args
