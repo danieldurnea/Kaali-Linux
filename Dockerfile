@@ -2,9 +2,26 @@ FROM kalilinux/kali-rolling
 
 RUN DEBIAN_FRONTEND=noninteractive 
   
- RUN apt-get clean       
-
-RUN apt install  wget unzip ssh unzip -y > /dev/null 2>&1
+FROM kalilinux/kali-rolling:latest
+LABEL maintainer="admin@csalab.id"
+RUN sed -i "s/http.kali.org/mirrors.ocf.berkeley.edu/g" /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get -y upgrade
+RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install \
+    sudo \
+    openssh-server \
+    python2 \
+    dialog \
+    firefox-esr \
+    inetutils-ping \
+    htop \
+    nano \
+    net-tools \
+    tigervnc-standalone-server \
+    tigervnc-xorg-extension \
+    tigervnc-viewer \
+    novnc \
+    dbus-x11
 ARG NGROK_TOKEN
 ARG Password
 ENV Password=${Password}
