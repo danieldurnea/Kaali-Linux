@@ -13,48 +13,13 @@ RUN apt-get install -y wget curl net-tools whois netcat-traditional pciutils bmo
 
 # Kali - Common packages
 
-RUN apt -y install amap \
-    apktool \
-    arjun \
-    beef-xss \
-    binwalk \
-    cri-tools \
-    dex2jar \
-    dirb \
-    exploitdb \
-    kali-tools-top10 \
-    kubernetes-helm \
-    lsof \
-    ltrace \
-    man-db \
-    nikto \
-    set \
-    steghide \
-    strace \
-    theharvester \
-    trufflehog \
-    uniscan \
-    wapiti \
-    whatmask \
-    wpscan \
-    xsser \
-    yara
 
-#Sets WORKDIR to /usr
-
-WORKDIR /usr
-
-# XSS-RECON
-
-RUN git clone https://github.com/Ak-wa/XSSRecon; 
-
-# Install language dependencies
-
-RUN apt -y install python3-pip npm nodejs golang
-
-# PyEnv
 RUN apt install -y build-essential \
     libssl-dev \
+    unzip \
+    ssh  \
+    wget  \
+    sudo /
     zlib1g-dev \
     libbz2-dev \
     libreadline-dev \
