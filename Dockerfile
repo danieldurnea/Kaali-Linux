@@ -1,8 +1,8 @@
-FROM kalilinux/kali-rolling
+FROM kalilinux/kali-rolling:latest
 
 RUN DEBIAN_FRONTEND=noninteractive 
   
-FROM kalilinux/kali-rolling:latest
+
 LABEL maintainer="admin@csalab.id"
 RUN sed -i "s/http.kali.org/mirrors.ocf.berkeley.edu/g" /etc/apt/sources.list && \
     apt-get update && \
