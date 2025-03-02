@@ -1,21 +1,22 @@
-name: SSH Server
-on: push
+name: Ubuntu Desktop Virtual Machine
+on: 
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+    
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Linux System Build
+    runs-on: ubuntu-20.04
     steps:
-     - uses: actions/checkout@v1
-
-     - name: Try Build
-       run: bash ./linux-ssh.sh
-
-        # After sign up on the https://ngrok.com/
-        # You can find this token here: https://dashboard.ngrok.com/get-started/setup
-        NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
-
-        # This password you will use when authorizing via SSH 
-        USER_PASS: ${{ secrets.USER_PASS }}
-
-     - name: Don't kill instace
-       if: ${{ failure() }}
-       run: sleep 1h 
+    - uses: actions/checkout@v4
+ ##   - name: If failed, means ok
+ ##     run: ./not-exist-file.sh it bloke build
+      env:
+        LINUX_USER_PASSWORD: ${{ secrets.LINUX_USER_PASSWORD }}
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        with:
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        run: sleep 6h
