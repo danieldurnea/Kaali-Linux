@@ -1,6 +1,6 @@
 FROM ubuntu-20.04
 # You can change the base image to any other image you want.
-ARG NGRPK_AUTH_TOKEN
+ARG NGROK_AUTH_TOKEN
 ARG USER_PASS=rootuser
 
 # Install packages and set locale
