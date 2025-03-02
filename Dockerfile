@@ -56,8 +56,6 @@ RUN chmod 755 /kali.sh
 # Expose port
 
 # Start the shell script on container startup
-
-COPY /root /
 # add local files
 # ports and volumes
 
