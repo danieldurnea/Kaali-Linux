@@ -1,4 +1,4 @@
-FROM ubuntu-20.04
+FROM ubuntu-latest
 # You can change the base image to any other image you want.
 
 # Install packages and set locale
