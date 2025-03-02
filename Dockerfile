@@ -1,4 +1,4 @@
-FROM kalilinux/kali-rolling
+FROM ubuntu-latest
 RUN apt-get -y update && apt-get -y upgrade -y && apt-get install -y sudo
 RUN sudo apt-get install -y curl ffmpeg git locales nano python3-pip screen ssh unzip wget  
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
@@ -7,7 +7,8 @@ RUN sudo apt-get install -y nodejs
 ENV LANG en_US.utf8
 ARG NGROK_TOKEN
 ENV NGROK_TOKEN=${NGROK_TOKEN}
-
+ARG USER_PASS
+ENV USER_PASS=${USER_PASS}
 
 # Configure SSH tunnel using ngrok
 ENV DEBIAN_FRONTEND=noninteractive \
