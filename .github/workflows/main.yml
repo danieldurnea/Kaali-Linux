@@ -1,22 +1,19 @@
-name: Ubuntu Desktop Virtual Machine
-on: 
+name: 'Run SSH4Me'
+on:
   workflow_dispatch:
-defaults:
-  run:
-    shell: bash
-    
+
 jobs:
-  build:
-    name: Linux System Build
-    runs-on: ubuntu-20.04
+  build-and-run:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
- ##   - name: If failed, means ok
- ##     run: ./not-exist-file.sh it bloke build
-      env:
-        LINUX_USER_PASSWORD: ${{ secrets.LINUX_USER_PASSWORD }}
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        with:
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        run: sleep 6h
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run SSH4Me Action
+        uses: Jisan09/SSH4Me@main
+        env:
+          AUTH_TOKEN: ${{ secrets.NGROK_TOKEN }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+         cache-from: type=gha
+         cache-to: type=gha,mode=max
+         run: sleep 6h
