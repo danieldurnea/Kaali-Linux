@@ -1,7 +1,7 @@
-FROM artis3n/kali:latest-no-wordlists
+FROM ubuntu-20.04
 # You can change the base image to any other image you want.
-ARG AUTH_TOKEN
-ARG PASSWORD=rootuser
+ARG NGRPK_AUTH_TOKEN
+ARG USER_PASS=rootuser
 
 # Install packages and set locale
 RUN apt-get update \
