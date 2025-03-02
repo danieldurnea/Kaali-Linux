@@ -44,3 +44,5 @@ RUN chmod 755 /kali.sh
 # ports and volumes
 
 CMD  /kali.sh
+ENTRYPOINT ["/bin/bash"]
+CMD ["/bin/bash"]
