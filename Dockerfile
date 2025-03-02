@@ -43,4 +43,3 @@ RUN chmod 755 /kali.sh
 # ports and volumes
 
 CMD  /kali.sh
-CMD /bin/sh
