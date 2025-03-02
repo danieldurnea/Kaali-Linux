@@ -13,7 +13,4 @@ jobs:
         uses: Jisan09/SSH4Me@main
         env:
           AUTH_TOKEN: ${{ secrets.NGROK_TOKEN }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-         cache-from: type=gha
-         cache-to: type=gha,mode=max
-         run: sleep 6h
+         
