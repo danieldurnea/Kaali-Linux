@@ -1,7 +1,5 @@
 FROM ubuntu-20.04
 # You can change the base image to any other image you want.
-ARG NGROK_TOKEN
-ARG USER_PASS=rootuser
 
 # Install packages and set locale
 RUN apt-get update \
