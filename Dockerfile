@@ -1,4 +1,4 @@
-FROM ubuntu-latest
+FROM ubuntu
 # You can change the base image to any other image you want.
 
 # Install packages and set locale
